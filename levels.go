@@ -13,41 +13,54 @@ const (
 	Debug
 )
 
+func LogLevelDebug() LogLevel {
+	return Debug | Info | Notice | Warning | Error | Critical | Alert | Emergency
+}
+func LogLevelInfo() LogLevel      { return Info | Notice | Warning | Error | Critical | Alert | Emergency }
+func LogLevelNotice() LogLevel    { return Notice | Warning | Error | Critical | Alert | Emergency }
+func LogLevelWarning() LogLevel   { return Warning | Error | Critical | Alert | Emergency }
+func LogLevelError() LogLevel     { return Error | Critical | Alert | Emergency }
+func LogLevelCritical() LogLevel  { return Critical | Alert | Emergency }
+func LogLevelAlert() LogLevel     { return Alert | Emergency }
+func LogLevelEmergency() LogLevel { return Emergency }
+
 func (l LogLevel) Match(v LogLevel) bool {
-	for i := 1; i <= int(v); i <<= 1 {
-		if l.Has(LogLevel(i)) {
-			return true
-		}
+	if l.Has(v) {
+		return true
 	}
 	return false
 }
 
 func (l LogLevel) Has(v LogLevel) bool {
-	return v == (v & l)
+	return l == (l & v)
 }
 
 func (l LogLevel) String() string {
+	var str string
 	for i := 1; i <= 255; i <<= 1 {
 		if l.Has(LogLevel(i)) {
 			switch LogLevel(i) {
 			case Emergency:
-				return string("EMERGENCY")
+				str += "EMERGENCY|"
 			case Alert:
-				return string("ALERT")
+				str += "ALERT|"
 			case Critical:
-				return string("CRITICAL")
+				str += "CRITICAL|"
 			case Error:
-				return string("ERROR")
+				str += "ERROR|"
 			case Warning:
-				return string("WARNING")
+				str += "WARNING|"
 			case Notice:
-				return string("NOTICE")
+				str += "NOTICE|"
 			case Info:
-				return string("INFO")
+				str += "INFO|"
 			case Debug:
-				return string("DEBUG")
+				str += "DEBUG|"
 			}
 		}
 	}
-	return string("UNKNOWN")
+	if s := len(str); s > 0 {
+		return str[:s-1]
+	}
+	return "UNKNOWN"
 }

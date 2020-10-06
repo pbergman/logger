@@ -24,7 +24,7 @@ func (t thresholdHandler) IsHandling(r *Record) bool {
 func (t *thresholdHandler) Handle(r *Record) bool {
 	t.process(r)
 	t.buffer.push(r)
-	if r.Level.Match(t.level) {
+	if r.Level <= t.level {
 		for t.buffer.valid() {
 			t.handler.Handle(t.buffer.shift())
 		}
